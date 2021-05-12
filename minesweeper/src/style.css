@@ -1,0 +1,29 @@
+div.square {
+    margin: 0;
+    padding: 0;
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    border: 1px solid black;
+}
+
+div.row {
+    margin: 0;
+    padding: 0;
+    height: 102px;
+}
+
+div.game {
+    padding: 0;
+    margin: auto;
+    border: 1px solid black;
+    width: 816px;
+}
+
+.black {
+    background-color: gray;
+}
+
+.white {
+    background-color: beige;
+}
