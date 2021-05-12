@@ -4,17 +4,10 @@ import './style.css';
 
 class Row extends React.Component {
     createRow() {
-        let id = this.props.id;
-        id = (id/2 === Math.round(id/2)) ? 0 : 1;
         let result = [];
-        let color = "";
+        let isBomb = false;
         for(let i = 0; i < 8; i++) {
-            if(i % 2 === id) {
-                color = "white";
-            } else {
-                color = "black";
-            }
-            result.push(<Square color={color}/>)
+            result.push(<Square bomb={isBomb} key={i.toString()}/>)
         }
         return result;
     }

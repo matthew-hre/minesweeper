@@ -4,7 +4,7 @@ import './style.css';
 class Square extends React.Component {
     render() {
         let props = this.props;
-        return(<div className={`square ${props.color}`}></div>);
+        return(<div className={`square ${props.bomb}`}></div>);
     }
 }
 
