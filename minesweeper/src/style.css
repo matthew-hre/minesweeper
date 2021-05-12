@@ -8,6 +8,10 @@ div.square {
     border: 1px solid #ff0040;
 }
 
+div.square:hover {
+    background-color: #232323;
+}
+
 div.row {
     margin: 0;
     padding: 0;
