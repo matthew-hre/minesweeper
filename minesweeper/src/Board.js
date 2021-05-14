@@ -5,7 +5,7 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: this.initData(this.props.width, this.props.height, this.props.bombs),
+            //data: this.initData(this.props.width, this.props.height, this.props.bombs),
             gameOver: false,
             bombCount: this.props.bombs,
         }
@@ -20,7 +20,7 @@ class Board extends React.Component {
 
             for(let j = 0; j < width; j++) {
 
-                newSquare = {
+                const newSquare = {
                     x: i,
                     y: j,
 
@@ -50,8 +50,8 @@ class Board extends React.Component {
         let currentBombs = 0;
 
         while(currentBombs < bombCount) {
-            randomX = this.getRandomInt(width);
-            randomY = this.getRandomInt(height);
+            let randomX = this.getRandomInt(width);
+            let randomY = this.getRandomInt(height);
 
             if(!data[randomX][randomY].isMine) {
                 data[randomX][randomY].isMine = true;
@@ -61,12 +61,16 @@ class Board extends React.Component {
         return data;
     }
 
+    renderBoard(data) {
+        // TODO
+    }
+
     render() {
         return (
             <div className="board">
                 <div className="info">
                     <span className="info-text">BOMBS: {this.state.bombCount}</span>
-                    <span className="info-text">{this.game.gameOver}</span>
+                    <span className="info-text">{this.gameOver}</span>
                 </div>
                 {this.renderBoard(this.state.data)}
             </div>
