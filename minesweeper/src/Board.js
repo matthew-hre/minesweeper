@@ -1,55 +1,84 @@
 import React from "react";
-
-import Row from "./Row";
+import PropTypes from "prop-types"
 
 class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            squares: Array(64),
+            data: this.initData(this.props.width, this.props.height, this.props.bombs),
+            gameOver: false,
+            bombCount: this.props.bombs,
         }
     }
 
-    createBoard() {
-        let result = [];
-        result.push(<button onClick="isSquareBomb(0, 0)"></button>)
-        for(let i = 0; i < 8; i++) {
-            result.push(<Row id={i.toString()} key={i.toString()}/>)
+    createNewBoard(width, height) {
+        let data = [];
+
+        for(let i = 0; i < height; i++) {
+            // new row
+            data.push([]);
+
+            for(let j = 0; j < width; j++) {
+
+                newSquare = {
+                    x: i,
+                    y: j,
+
+                    isBomb: false,
+                    nextTo: 0,
+                    isRevealed: false,
+                    isEmpty: false,
+                    isFlagged: false,
+                }
+
+                data[i][j] = newSquare;
+
+            }
         }
-        return result;
+
+        return data;
     }
 
-    isSquareBomb(x, y) {
-        let rows = document.getElementsByClassName("row");
-    
-        let foundRow;
-        for(let row of rows) {
-            if(row.props.key === y.toString()) {
-                foundRow = row;
-                break;
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+    getRandomInt(max) {
+        return Math.floor(Math.random() * max);
+    }
+
+    populateBoard(data, width, height, bombCount) {
+        let x = 0;
+        let y = 0;
+        let currentBombs = 0;
+
+        while(currentBombs < bombCount) {
+            randomX = this.getRandomInt(width);
+            randomY = this.getRandomInt(height);
+
+            if(!data[randomX][randomY].isMine) {
+                data[randomX][randomY].isMine = true;
+                currentBombs++;
             }
         }
-    
-        let squares = foundRow.getElementsByClassName("square");
-    
-        let foundSquare;
-        for(let square of squares) {
-            if(square.props.key === x.toString()) {
-                foundSquare = square;
-                break;
-            }
-        }
-    
-        if (foundSquare.className.includes("true")) {
-            return true; // BOOM!
-        }
-    
-        return false; // dud.
+        return data;
     }
 
     render() {
-        return this.createBoard();
+        return (
+            <div className="board">
+                <div className="info">
+                    <span className="info-text">BOMBS: {this.state.bombCount}</span>
+                    <span className="info-text">{this.game.gameOver}</span>
+                </div>
+                {this.renderBoard(this.state.data)}
+            </div>
+        );
     }
+}
+
+// type checks
+Board.propTypes = {
+    width: PropTypes.number,
+    height: PropTypes.number,
+    bombs: PropTypes.number,
 }
 
 export default Board;

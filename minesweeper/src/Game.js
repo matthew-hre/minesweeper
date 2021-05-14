@@ -4,10 +4,21 @@ import Board from "./Board";
 import "./style.css";
 
 class Game extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            width: 10,
+            height: 10,
+            bombs: 5,
+        }
+    }
+
+
     render() {
+        const { width, height, bombs } = this.state;
         return (
             <div className="game">
-                <Board />
+                <Board width={width} height={height} bombs={bombs}/>
             </div>
         );
     }
