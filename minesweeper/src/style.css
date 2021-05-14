@@ -26,4 +26,6 @@ div.game {
 
 body {
     background-color: #131313;
+    color: white;
+    font-family: monospace;
 }

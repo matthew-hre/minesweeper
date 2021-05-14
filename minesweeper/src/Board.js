@@ -5,10 +5,18 @@ class Board extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            //data: this.initData(this.props.width, this.props.height, this.props.bombs),
+            data: this.initData(this.props.width, this.props.height, this.props.bombs),
             gameOver: false,
             bombCount: this.props.bombs,
         }
+    }
+
+    initData(width, height, bombCount) {
+
+        const board = this.createNewBoard(width, height);
+        this.populateBoard(board);
+
+        return board;
     }
 
     createNewBoard(width, height) {
@@ -45,8 +53,8 @@ class Board extends React.Component {
     }
 
     populateBoard(data, width, height, bombCount) {
-        let x = 0;
-        let y = 0;
+        //let x = 0;
+        //let y = 0;
         let currentBombs = 0;
 
         while(currentBombs < bombCount) {
@@ -62,7 +70,15 @@ class Board extends React.Component {
     }
 
     renderBoard(data) {
-        // TODO
+        let result = [];
+        data.forEach((row) => {
+            row.forEach((square) => {
+                // implement drawing
+            });
+            result += <br />;
+        });
+
+        return result;
     }
 
     render() {
@@ -72,7 +88,6 @@ class Board extends React.Component {
                     <span className="info-text">BOMBS: {this.state.bombCount}</span>
                     <span className="info-text">{this.gameOver}</span>
                 </div>
-                {this.renderBoard(this.state.data)}
             </div>
         );
     }
