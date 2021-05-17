@@ -35,7 +35,7 @@ class Square extends React.Component {
 // type checks
 const states = {
     isRevealed: PropTypes.bool,
-    isMine: PropTypes.bool,
+    isBomb: PropTypes.bool,
     isFlagged: PropTypes.bool,
 }
 

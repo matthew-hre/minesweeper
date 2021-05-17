@@ -13,10 +13,11 @@ class Board extends React.Component {
 
     initData(width, height, bombCount) {
 
-        const board = this.createNewBoard(width, height);
-        this.populateBoard(board);
+        let data = this.createNewBoard(width, height);
+        data = this.populateBoard(data, width, height, bombCount);
+        data = this.calculateAdjacentSquares(data, width, height);
 
-        return board;
+        return data;
     }
 
     createNewBoard(width, height) {
@@ -53,27 +54,85 @@ class Board extends React.Component {
     }
 
     populateBoard(data, width, height, bombCount) {
-        //let x = 0;
-        //let y = 0;
         let currentBombs = 0;
 
         while(currentBombs < bombCount) {
             let randomX = this.getRandomInt(width);
             let randomY = this.getRandomInt(height);
 
-            if(!data[randomX][randomY].isMine) {
-                data[randomX][randomY].isMine = true;
+            if(!data[randomX][randomY].isBomb) {
+                data[randomX][randomY].isBomb = true;
                 currentBombs++;
-            }
+            }   
         }
         return data;
+    }
+
+    calculateAdjacentSquares(data, width, height) {
+        let updatedData = data;
+
+        for(let i = 0; i < width; i++) {
+            for(let j = 0; j < height; j++) {
+                if(!data[j][i].isBomb) {
+                    let nearbyBombs = 0;
+                    const area = this.findNextTo(data[j][i].x, data[j][i].y, data);
+                    area.map(value => {
+                        if(value.isBomb) nearbyBombs++;
+                        return area; // so vscode will stop yelling at me >:C
+                    });
+                    if(nearbyBombs === 0) {
+                        updatedData[j][i].isEmpty = true;
+                    }
+                    updatedData[j][i].nextTo = nearbyBombs;
+                }
+            }
+        }
+        return updatedData;
+    }
+
+    findNextTo(x, y, data) {
+        let cellsNextTo = [];
+
+        if(x > 0) {
+            cellsNextTo.push(data[x - 1][y]);
+        } 
+
+        if(x < this.props.height - 1) {
+            cellsNextTo.push(data[x + 1][y]);
+        }
+
+        if(y > 0) {
+            cellsNextTo.push(data[x][y - 1]);
+        }
+
+        if(y < this.props.width - 1) {
+            cellsNextTo.push(data[x][y + 1]);
+        }
+
+        if(x > 0 && y > 0) {
+            cellsNextTo.push(data[x - 1][y]);
+        } 
+
+        if(x < this.props.height - 1 && y < this.props.width - 1) {
+            cellsNextTo.push(data[x + 1][y]);
+        }
+
+        if(y > 0 && x < this.props.height - 1) {
+            cellsNextTo.push(data[x][y - 1]);
+        }
+
+        if(y < this.props.width - 1 && x > 0) {
+            cellsNextTo.push(data[x][y + 1]);
+        }
+
+        return cellsNextTo;
     }
 
     renderBoard(data) {
         let result = [];
         data.forEach((row) => {
             row.forEach((square) => {
-                // implement drawing
+                // implement drawing (ok i will tomorrow <3)
             });
             result += <br />;
         });

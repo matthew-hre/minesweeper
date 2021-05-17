@@ -9,7 +9,7 @@ class Game extends React.Component {
         this.state = {
             width: 10,
             height: 10,
-            bombs: 5,
+            bombs: 50,
         }
     }
 
