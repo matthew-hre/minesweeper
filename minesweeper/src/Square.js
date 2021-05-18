@@ -5,14 +5,14 @@ import './style.css';
 class Square extends React.Component {
 
     getValue() {
-        const {value} = this.props;
+        const value = this.props;
+
+        if(!value.isRevealed) {
+            return (this.props.value.isFlagged) ? "F" : null;
+        }
 
         if(value.nextTo > 0) {
             return value.nextTo;
-        }
-        
-        if(!value.isRevealed) {
-            return (this.props.value.isFlagged) ? "F" : null;
         }
 
         if(value.isBomb) {
@@ -22,6 +22,7 @@ class Square extends React.Component {
         if (value.nextTo === 0) {
             return null;
         }
+        return value.nextTo;
     }
 
     render() {

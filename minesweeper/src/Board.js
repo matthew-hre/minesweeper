@@ -92,6 +92,48 @@ class Board extends React.Component {
         return updatedData;
     }
 
+    getHidden(data) {
+        let hiddenList = [];
+
+        data.map((row) => {
+            data.map((square) => {
+                if(!square.isRevealed) {
+                    hiddenList.push();
+                }
+            });
+        });
+
+        return hiddenList;
+    }
+
+    getBombs(data) {
+        let bombList = [];
+
+        data.map((row) => {
+            data.map((square) => {
+                if(!square.isRevealed) {
+                    bombList.push();
+                }
+            });
+        });
+
+        return bombList;
+    }
+
+    getFlags(data) {
+        let flagList = [];
+
+        data.map((row) => {
+            data.map((square) => {
+                if(!square.isFlagged) {
+                    flagList.push();
+                }
+            });
+        });
+
+        return flagList;
+    }
+
     findNextTo(x, y, data) {
         let cellsNextTo = [];
 
@@ -130,8 +172,52 @@ class Board extends React.Component {
         return cellsNextTo;
     }
 
+    reveal(x, y, data) {
+        let area = this.findNextTo(x, y, data);
+
+        area.map((square) => {
+            if(!square.isFlagged && !square.isRevealed && (square.isEmpty || !square.isMine)) {
+                data[square.x][square.y].isRevealed = true;
+                if(square.isEmpty) {
+                    this.reveal(square.x, square.y, data);
+                }
+            }
+        });
+        return data;
+    }
+
     handleClick(x, y) {
-        alert(x + ", " + y);
+
+        console.log(x + ", " + y);
+
+        const clicked = this.state.data[x][y];
+
+        if(clicked.isRevealed || clicked.isFlagged) return null;
+
+        if(clicked.isMine) {
+            alert("you lose!");
+            this.setState({gameStatus: "you suck at this."});
+            //this.revealBoard();
+        }
+
+        let updatedData = this.state.data;
+        updatedData[x][y].isRevealed = true;
+        updatedData[x][y].isFlagged = false;
+
+        if(updatedData[x][y].isEmpty) {
+            updatedData = this.reveal(x, y, updatedData);
+        }
+
+        if(this.getHidden(updatedData).length === this.props.mines) {
+            alert("winner!");
+            //this.revealBoard();
+            this.setState({gameStatus: "you win!"});
+        }
+
+        this.setState({
+            data: updatedData,
+            bombCount: this.props.bombs - this.getFlags(updatedData).length,
+        });
     }
 
     renderBoard(data) {
@@ -139,6 +225,7 @@ class Board extends React.Component {
             return row.map((square) => {
                 return (
                     <Square
+                    key={square.x + "," + square.y}
                     onClick={() => this.handleClick(square.x, square.y)}
                     cMenu={(e) => this.handleContextMenu(e, square.x, square.y)}
                     value={square}
