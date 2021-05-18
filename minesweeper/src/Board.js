@@ -1,5 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
+
+import Square from "./Square";
 
 class Board extends React.Component {
     constructor(props) {
@@ -128,16 +130,22 @@ class Board extends React.Component {
         return cellsNextTo;
     }
 
-    renderBoard(data) {
-        let result = [];
-        data.forEach((row) => {
-            row.forEach((square) => {
-                // implement drawing (ok i will tomorrow <3)
-            });
-            result += <br />;
-        });
+    handleClick(x, y) {
+        alert(x + ", " + y);
+    }
 
-        return result;
+    renderBoard(data) {
+        return data.map((row) => {
+            return row.map((square) => {
+                return (
+                    <Square
+                    onClick={() => this.handleClick(square.x, square.y)}
+                    cMenu={(e) => this.handleContextMenu(e, square.x, square.y)}
+                    value={square}
+                    />
+                );
+            })
+        });
     }
 
     render() {
@@ -146,6 +154,9 @@ class Board extends React.Component {
                 <div className="info">
                     <span className="info-text">BOMBS: {this.state.bombCount}</span>
                     <span className="info-text">{this.gameOver}</span>
+                </div>
+                <div className="game">
+                    {this.renderBoard(this.state.data)}
                 </div>
             </div>
         );

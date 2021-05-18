@@ -7,6 +7,10 @@ class Square extends React.Component {
     getValue() {
         const {value} = this.props;
 
+        if(value.nextTo > 0) {
+            return value.nextTo;
+        }
+        
         if(!value.isRevealed) {
             return (this.props.value.isFlagged) ? "F" : null;
         }

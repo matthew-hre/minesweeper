@@ -1,27 +1,29 @@
 div.square {
     margin: 0;
     padding: 0;
-    width: 50px;
-    height: 50px;
+    width: 20px;
+    height: 20px;
     display: inline-block;
     background-color: #131313;
-    border: 1px solid #ff0040;
+    border: 1px solid white;
+    margin-right: 3px;
+    text-align: center;
 }
 
 div.square:hover {
     background-color: #232323;
 }
 
-div.row {
-    margin: 0;
-    padding: 0;
-    height: 52px; /* tile + border */
-}
-
 div.game {
     padding: 0;
     margin: auto;
-    width: calc(50px * 8 + 16px);
+    width: 252px;
+}
+
+.info {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 12px;
 }
 
 body {
