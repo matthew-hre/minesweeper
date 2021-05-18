@@ -5,20 +5,16 @@ import './style.css';
 class Square extends React.Component {
 
     getValue() {
-        const value = this.props;
+        const value = this.props.value;
 
         if(!value.isRevealed) {
             return (this.props.value.isFlagged) ? "F" : null;
         }
 
-        if(value.nextTo > 0) {
-            return value.nextTo;
-        }
-
         if(value.isBomb) {
             return "B"
         }
-
+ 
         if (value.nextTo === 0) {
             return null;
         }
@@ -31,7 +27,7 @@ class Square extends React.Component {
             <div className="square" 
             onClick={this.props.onClick} 
             onContextMenu={this.props.openMenu}>
-            {this.getValue}
+            {this.getValue()}
             </div>
         );
     }

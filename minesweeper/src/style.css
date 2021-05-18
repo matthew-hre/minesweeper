@@ -7,7 +7,9 @@ div.square {
     background-color: #131313;
     border: 1px solid white;
     margin-right: 3px;
+    margin-bottom: 3px;
     text-align: center;
+    vertical-align: top;
 }
 
 div.square:hover {

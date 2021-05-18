@@ -201,10 +201,23 @@ class Board extends React.Component {
         }
 
         let updatedData = this.state.data;
-        updatedData[x][y].isRevealed = true;
-        updatedData[x][y].isFlagged = false;
+        const currentSquare = updatedData[x][y];
 
-        if(updatedData[x][y].isEmpty) {
+        // const newSquare = {
+        //     isRevealed: true,
+        //     isFlagged: false,
+        //     x: currentSquare.x,
+        //     y: currentSquare.y,
+        //     isBomb: currentSquare.isBomb,
+        //     nextTo: currentSquare.nextTo,
+        // }
+
+        // updatedData[x][y] = newSquare;
+
+        currentSquare.isRevealed = true;
+        currentSquare.isFlagged = false;
+
+        if(currentSquare.isEmpty) {
             updatedData = this.reveal(x, y, updatedData);
         }
 
