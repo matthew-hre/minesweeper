@@ -23,10 +23,20 @@ class Square extends React.Component {
 
     render() {
         const {value, onClick, openMenu} = this.props;
+        let className = "square";
+        if(!value.isRevealed) {
+            className += " hidden";
+        } else if(value.isBomb) {
+            className += " bomb"
+        } else if(value.isFlagged) {
+            className += " flagged"
+        }
+
         return(
             <div className="square" 
             onClick={this.props.onClick} 
-            onContextMenu={this.props.openMenu}>
+            onContextMenu={this.props.openMenu}
+            className={className}>
             {this.getValue()}
             </div>
         );

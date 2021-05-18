@@ -12,6 +12,14 @@ div.square {
     vertical-align: top;
 }
 
+div.hidden {
+    background-color: white;
+}
+
+div.bomb {
+    background-color: #ff0040;
+}
+
 div.square:hover {
     background-color: #232323;
 }
