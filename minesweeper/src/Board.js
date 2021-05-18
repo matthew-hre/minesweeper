@@ -154,19 +154,19 @@ class Board extends React.Component {
         }
 
         if(x > 0 && y > 0) {
-            cellsNextTo.push(data[x - 1][y]);
+            cellsNextTo.push(data[x - 1][y - 1]);
         } 
 
         if(x < this.props.height - 1 && y < this.props.width - 1) {
-            cellsNextTo.push(data[x + 1][y]);
+            cellsNextTo.push(data[x + 1][y + 1]);
         }
 
         if(y > 0 && x < this.props.height - 1) {
-            cellsNextTo.push(data[x][y - 1]);
+            cellsNextTo.push(data[x + 1][y - 1]);
         }
 
         if(y < this.props.width - 1 && x > 0) {
-            cellsNextTo.push(data[x][y + 1]);
+            cellsNextTo.push(data[x - 1][y + 1]);
         }
 
         return cellsNextTo;
