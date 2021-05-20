@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 
 import Square from "./Square";
 
@@ -8,8 +7,9 @@ class Board extends React.Component {
         super(props);
         this.state = {
             data: this.initData(this.props.width, this.props.height, this.props.bombs),
-            gameOver: false,
+            gameOver: "click away...",
             bombCount: this.props.bombs,
+            clickCount: 0
         }
     }
 
@@ -26,7 +26,6 @@ class Board extends React.Component {
         let data = [];
 
         for(let i = 0; i < height; i++) {
-            // new row
             data.push([]);
 
             for(let j = 0; j < width; j++) {
@@ -78,9 +77,8 @@ class Board extends React.Component {
                 if(!data[j][i].isBomb) {
                     let nearbyBombs = 0;
                     const area = this.findNextTo(data[j][i].x, data[j][i].y, data);
-                    area.map(value => {
+                    area.forEach(value => {
                         if(value.isBomb) nearbyBombs++;
-                        return area; // so vscode will stop yelling at me >:C
                     });
                     if(nearbyBombs === 0) {
                         updatedData[j][i].isEmpty = true;
@@ -92,46 +90,30 @@ class Board extends React.Component {
         return updatedData;
     }
 
-    getHidden(data) {
-        let hiddenList = [];
+    getWithAttribute(data, attr) {
+        let list = [];
 
-        data.map((row) => {
-            data.map((square) => {
-                if(!square.isRevealed) {
-                    hiddenList.push();
+        data.forEach((row) => {
+            row.forEach((square) => {
+                if(attr(square)) {
+                    list.push();
                 }
             });
         });
 
-        return hiddenList;
+        return list;
+    }
+
+    getHidden(data) {
+        return this.getWithAttribute(data, (square) => !square.isRevealed);
     }
 
     getBombs(data) {
-        let bombList = [];
-
-        data.map((row) => {
-            data.map((square) => {
-                if(!square.isRevealed) {
-                    bombList.push();
-                }
-            });
-        });
-
-        return bombList;
+        return this.getWithAttribute(data, (square) => square.isBomb);
     }
 
     getFlags(data) {
-        let flagList = [];
-
-        data.map((row) => {
-            data.map((square) => {
-                if(!square.isFlagged) {
-                    flagList.push();
-                }
-            });
-        });
-
-        return flagList;
+        return this.getWithAttribute(data, (square) => square.isFlagged);
     }
 
     findNextTo(x, y, data) {
@@ -175,8 +157,8 @@ class Board extends React.Component {
     reveal(x, y, data) {
         let area = this.findNextTo(x, y, data);
 
-        area.map((square) => {
-            if(!square.isFlagged && !square.isRevealed && (square.isEmpty || !square.isMine)) {
+        area.forEach((square) => {
+            if(!square.isFlagged && !square.isRevealed && (square.isEmpty || !square.isBomb)) {
                 data[square.x][square.y].isRevealed = true;
                 if(square.isEmpty) {
                     this.reveal(square.x, square.y, data);
@@ -186,33 +168,37 @@ class Board extends React.Component {
         return data;
     }
 
-    handleClick(x, y) {
+    revealBoard() {
+        this.state.data.forEach((row) => {
+            row.forEach((square) => {
+                square.isRevealed = true;
+            });
+        });
 
-        console.log(x + ", " + y);
+        this.setState({data: this.state.data});
+    }
 
-        const clicked = this.state.data[x][y];
+    async handleClick(x, y) {
+        let clicked = this.state.data[x][y];
+
+        if(this.state.clickCount === 0) {
+            if(!clicked.isEmpty) {
+                clicked = this.state.data[x][y];
+                const newData = this.initData(this.props.width, this.props.height, this.props.bombs);
+                await this.setState({data: newData});
+                return this.handleClick(x, y);
+            }
+        }
 
         if(clicked.isRevealed || clicked.isFlagged) return null;
 
-        if(clicked.isMine) {
-            alert("you lose!");
-            this.setState({gameStatus: "you suck at this."});
-            //this.revealBoard();
+        if(clicked.isBomb) {
+            this.setState({gameOver: "you suck at this."});
+            this.revealBoard();
         }
 
         let updatedData = this.state.data;
         const currentSquare = updatedData[x][y];
-
-        // const newSquare = {
-        //     isRevealed: true,
-        //     isFlagged: false,
-        //     x: currentSquare.x,
-        //     y: currentSquare.y,
-        //     isBomb: currentSquare.isBomb,
-        //     nextTo: currentSquare.nextTo,
-        // }
-
-        // updatedData[x][y] = newSquare;
 
         currentSquare.isRevealed = true;
         currentSquare.isFlagged = false;
@@ -221,16 +207,49 @@ class Board extends React.Component {
             updatedData = this.reveal(x, y, updatedData);
         }
 
-        if(this.getHidden(updatedData).length === this.props.mines) {
-            alert("winner!");
-            //this.revealBoard();
-            this.setState({gameStatus: "you win!"});
+        if(this.getHidden(updatedData).length === this.props.bombs) {
+            this.revealBoard();
+            this.setState({gameOver: "winner winner"});
         }
 
         this.setState({
             data: updatedData,
-            bombCount: this.props.bombs - this.getFlags(updatedData).length,
+            clickCount: this.state.clickCount+1,
         });
+    }
+
+    onContextMenu(e, x, y) {
+        e.preventDefault();
+
+        const newData = this.state.data;
+
+        const squareToFlag = newData[x][y];
+        let bombCount = this.state.bombCount;
+
+        if(squareToFlag.isRevealed) return;
+        
+        if(squareToFlag.isFlagged) {
+            squareToFlag.isFlagged = false;
+            bombCount++;
+        } else {
+            squareToFlag.isFlagged = true;
+            bombCount--;
+        }
+
+        if(bombCount === 0) {
+            const bombs = this.getBombs(newData);
+            const flags = this.getFlags(newData);
+
+            if(bombs.length === flags.length) {
+                this.setState({
+                    data: this.state.data,
+                    bombCount: 0,
+                    gameOver: "winner winner"
+                });
+            }
+        }
+
+        this.setState({data: this.state.data, bombCount: bombCount});
     }
 
     renderBoard(data) {
@@ -240,11 +259,11 @@ class Board extends React.Component {
                     <Square
                     key={square.x + "," + square.y}
                     onClick={() => this.handleClick(square.x, square.y)}
-                    cMenu={(e) => this.handleContextMenu(e, square.x, square.y)}
+                    onContextMenu={(e) => this.onContextMenu(e, square.x, square.y)}
                     value={square}
                     />
                 );
-            })
+            });
         });
     }
 
@@ -252,8 +271,8 @@ class Board extends React.Component {
         return (
             <div className="board">
                 <div className="info">
-                    <span className="info-text">BOMBS: {this.state.bombCount}</span>
-                    <span className="info-text">{this.gameOver}</span>
+                    <div className="info-text">bombs remaining: {this.state.bombCount}</div>
+                    <div className="info-text">{this.state.gameOver}</div>
                 </div>
                 <div className="game">
                     {this.renderBoard(this.state.data)}
@@ -261,13 +280,6 @@ class Board extends React.Component {
             </div>
         );
     }
-}
-
-// type checks
-Board.propTypes = {
-    width: PropTypes.number,
-    height: PropTypes.number,
-    bombs: PropTypes.number,
 }
 
 export default Board;
